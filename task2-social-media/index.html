@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlphaPulse - Social Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-light">
+
+  <div class="container my-5">
+    <div class="row g-4">
+      
+      <!-- Left Profile Column via Flexbox alignment -->
+      <div class="col-12 col-md-4">
+        <div class="card bg-secondary text-white border-0 p-4 rounded-4 text-center d-flex flex-column align-items-center shadow">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" class="rounded-circle border border-4 border-info mb-3 shadow" style="width:100px; height:100px; object-fit:cover;">
+          <h4 class="fw-bold mb-0">Nikhita S.</h4>
+          <p class="text-info small mb-3">@nikhita_codes</p>
+          
+          <div class="d-flex justify-content-around w-100 border-top border-dark pt-3 text-center">
+            <div><h5 class="fw-bold mb-0" id="followerCount">542</h5><small class="text-light-50">Followers</small></div>
+            <div><h5 class="fw-bold mb-0">189</h5><small class="text-light-50">Following</small></div>
+          </div>
+          <button class="btn btn-info btn-sm w-100 mt-4 rounded-pill fw-bold" id="followBtn" onclick="toggleFollow()">Follow</button>
+        </div>
+      </div>
+
+      <!-- Main Interaction Feed -->
+      <div class="col-12 col-md-8 space-y-4">
+        <!-- Create Post Window -->
+        <div class="card bg-secondary text-white border-0 p-4 rounded-4 mb-4 shadow">
+          <form id="postForm" onsubmit="createNewPost(event)">
+            <textarea id="postContent" class="form-control bg-dark border-0 text-white placeholder-muted mb-3 rounded-3" rows="3" placeholder="What technical milestone did you reach today?" required></textarea>
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-info px-4 fw-bold rounded-pill text-dark">Publish Post</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Dynamic Timeline Area -->
+        <div class="d-flex flex-column gap-3" id="timelineFeed">
+          <!-- Injection node for active timeline cards -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let followState = false;
+    let baseFollowers = 542;
+    
+    let feedData = [
+      { id: 1, author: "Rahul Kumar", handle: "@rahul_dev", text: "Successfully finished refining the Flexbox layouts for our assignment modules. Clean design feels amazing!", likes: 14 }
+    ];
+
+    function toggleFollow() {
+      followState = !followState;
+      const btn = document.getElementById('followBtn');
+      document.getElementById('followerCount').innerText = followState ? baseFollowers + 1 : baseFollowers;
+      btn.innerText = followState ? "Following" : "Follow";
+      btn.classList.toggle('btn-info');
+      btn.classList.toggle('btn-outline-light');
+    }
+
+    function renderFeed() {
+      const node = document.getElementById('timelineFeed');
+      node.innerHTML = feedData.map(post => `
+        <div class="card bg-secondary text-white border-0 p-4 rounded-4 shadow-sm">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="bg-info rounded-circle d-flex align-items-center justify-content-center text-dark fw-bold shadow-sm" style="width:40px; height:40px;">
+              ${post.author.charAt(0)}
+            </div>
+            <div>
+              <h6 class="mb-0 fw-bold">${post.author}</h6>
+              <small class="text-info">${post.handle}</small>
+            </div>
+          </div>
+          <p class="mt-2 text-light-50">${post.text}</p>
+          <div class="border-top border-dark pt-2 mt-3">
+            <button class="btn btn-link text-decoration-none text-danger p-0 fw-bold fs-6" onclick="triggerLike(${post.id})">
+              ❤️ <span class="ms-1 text-white small">${post.likes} Likes</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function createNewPost(e) {
+      e.preventDefault();
+      const txt = document.getElementById('postContent').value;
+      feedData.unshift({
+        id: Date.now(),
+        author: "Nikhita S.",
+        handle: "@nikhita_codes",
+        text: txt,
+        likes: 0
+      });
+      document.getElementById('postContent').value = '';
+      renderFeed();
+    }
+
+    function triggerLike(id) {
+      const match = feedData.find(p => p.id === id);
+      if(match) match.likes++;
+      renderFeed();
+    }
+
+    renderFeed();
+  </script>
+</body>
+</html>
